@@ -96,8 +96,14 @@ class LearningAgent(Agent):
         maxQ = None
         if state in self.Q.keys():
             current_state = self.Q[state]
-            key = max(current_state, key=lambda k: current_state[k])
-            maxQ = key
+            # EDGE-CASE: There could multiple states with max values
+            # EXAMPLE: { 'action-1':0.0, 'action-2': 0.0, 'action-3': -0.33, 'action-4':0.0 }
+            # KEYPOINT: We need to extract all the states that shares max Q values.
+            # So, picking from the list.
+            # REDUNDANT = key = max(current_state, key=lambda k: current_state[k])
+            highest_score = max(current_state.values())
+            _list = [k for k, v in current_state.items() if v == highest_score]
+            maxQ = _list[0]
         else:
             createQ(state)
 
@@ -204,7 +210,7 @@ def run():
     #   learning   - set to True to force the driving agent to use Q-learning
     #    * epsilon - continuous value for the exploration factor, default is 1
     #    * alpha   - continuous value for the learning rate, default is 0.5
-    agent = env.create_agent(LearningAgent, learning = False)
+    agent = env.create_agent(LearningAgent, learning = True)
     
     ##############
     # Follow the driving agent
@@ -226,7 +232,7 @@ def run():
     # Flags:
     #   tolerance  - epsilon tolerance before beginning testing, default is 0.05 
     #   n_test     - discrete number of testing trials to perform, default is 0
-    sim.run(n_test = 20)
+    sim.run(n_test = 10)
 
 
 if __name__ == '__main__':
