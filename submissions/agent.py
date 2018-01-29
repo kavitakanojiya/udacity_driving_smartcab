@@ -96,14 +96,15 @@ class LearningAgent(Agent):
         maxQ = None
         if state in self.Q.keys():
             current_state = self.Q[state]
+            # REDUNDANT = key = max(current_state, key=lambda k: current_state[k])
+
             # EDGE-CASE: There could multiple states with max values
             # EXAMPLE: { 'action-1':0.0, 'action-2': 0.0, 'action-3': -0.33, 'action-4':0.0 }
             # KEYPOINT: We need to extract all the states that shares max Q values.
-            # So, picking from the list.
-            # REDUNDANT = key = max(current_state, key=lambda k: current_state[k])
+            # So, picking random action from the actions.
             highest_score = max(current_state.values())
             _list = [k for k, v in current_state.items() if v == highest_score]
-            maxQ = _list[0]
+            maxQ = random.choice(_list)
         else:
             createQ(state)
 
@@ -210,7 +211,7 @@ def run():
     #   learning   - set to True to force the driving agent to use Q-learning
     #    * epsilon - continuous value for the exploration factor, default is 1
     #    * alpha   - continuous value for the learning rate, default is 0.5
-    agent = env.create_agent(LearningAgent, learning = True, epsilon=0.8, alpha=0.4)
+    agent = env.create_agent(LearningAgent, learning = True, epsilon = 0.8, alpha = 0.4)
     
     ##############
     # Follow the driving agent
@@ -225,14 +226,14 @@ def run():
     #   display      - set to False to disable the GUI if PyGame is enabled
     #   log_metrics  - set to True to log trial and simulation results to /logs
     #   optimized    - set to True to change the default log file name
-    sim = Simulator(env, update_delay = 0.01, display = True, log_metrics = True, optimized = True)
+    sim = Simulator(env, update_delay = 0.001, display = True, log_metrics = True, optimized = True)
     
     ##############
     # Run the simulator
     # Flags:
     #   tolerance  - epsilon tolerance before beginning testing, default is 0.05 
     #   n_test     - discrete number of testing trials to perform, default is 0
-    sim.run(n_test = 30)
+    sim.run(n_test = 40)
 
 
 if __name__ == '__main__':
